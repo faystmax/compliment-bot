@@ -1,16 +1,33 @@
 package org.faystmax
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-fun main() {
-    val name = "Kotlin"
-    //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-    // to see how IntelliJ IDEA suggests fixing it.
-    println("Hello, " + name + "!")
+import org.faystmax.bot.ComplimentTelegramBot
+import org.telegram.telegrambots.bots.DefaultBotOptions
+import org.telegram.telegrambots.meta.TelegramBotsApi
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
+import java.time.Duration
 
-    for (i in 1..5) {
-        //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-        // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        println("i = $i")
+const val RECONNECT_PAUSE_SEC = 5
+
+fun main() {
+    println("Starting App!")
+    val compliments: List<String> =
+        object {}::class.java.classLoader.getResourceAsStream("./compliments.txt")?.bufferedReader()?.readLines()!!
+    println("Loaded compliments size= " + compliments.size)
+    registerBot(compliments);
+}
+
+fun registerBot(compliments: List<String>) {
+    try {
+        val telegramBotsApi = TelegramBotsApi(DefaultBotSession::class.java)
+        val complimentTelegramBot = ComplimentTelegramBot(
+            "LeraComplimentBot", "", compliments, DefaultBotOptions()
+        )
+        telegramBotsApi.registerBot(complimentTelegramBot)
+    } catch (ex: TelegramApiException) {
+        ex.printStackTrace()
+        println("Cant Connect. Pause $RECONNECT_PAUSE_SEC sec and try again.")
+        Thread.sleep(Duration.ofSeconds(5))
+        registerBot(compliments);
     }
 }
