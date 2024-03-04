@@ -1,6 +1,7 @@
 package org.faystmax.compliment.bot;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.faystmax.compliment.bot.bot.ComplimentTelegramBot;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -15,14 +16,15 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 public class ComplimentBotApplication {
     private static final int RECONNECT_PAUSE_SEC = 5;
 
     public static void main(String[] args) throws Exception {
-        System.out.println("Starting App!");
+        log.info("Starting App!");
 
         final List<String> compliments = extractCompliments();
-        System.out.println("Loaded compliments size= " + compliments.size());
+        log.info("Loaded compliments size= " + compliments.size());
 
         registerBot(compliments);
     }
@@ -46,8 +48,7 @@ public class ComplimentBotApplication {
             );
             telegramBotsApi.registerBot(complimentTelegramBot);
         } catch (final TelegramApiException ex) {
-            ex.printStackTrace();
-            System.out.println("Cant Connect. Pause " + RECONNECT_PAUSE_SEC + " sec and try again.");
+            log.error("Cant Connect. Pause {} sec and try again.", RECONNECT_PAUSE_SEC, ex);
             Thread.sleep(Duration.ofSeconds(5));
             registerBot(compliments);
         }

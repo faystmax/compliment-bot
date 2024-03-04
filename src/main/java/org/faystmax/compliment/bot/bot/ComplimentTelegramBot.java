@@ -1,5 +1,6 @@
 package org.faystmax.compliment.bot.bot;
 
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -9,16 +10,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 public class ComplimentTelegramBot extends TelegramLongPollingBot {
     private final String username;
     private final List<String> compliments;
 
-    public ComplimentTelegramBot(
-            final String username,
-            final String botToken,
-            final List<String> compliments,
-            final DefaultBotOptions options
-    ) {
+    public ComplimentTelegramBot(final String username, final String botToken, final List<String> compliments, final DefaultBotOptions options) {
         super(options, botToken);
         this.username = username;
         this.compliments = compliments;
@@ -41,6 +38,6 @@ public class ComplimentTelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onRegister() {
-        System.out.println(username + " registered successfully!");
+        log.info(username + " registered successfully!");
     }
 }
