@@ -1,6 +1,7 @@
 plugins {
     id 'idea'
     id 'java'
+    id 'org.graalvm.buildtools.native' version '0.10.1'
 }
 
 group = "org.faystmax"
@@ -31,4 +32,19 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+graalvmNative {
+    toolchainDetection = true
+    binaries {
+        main {
+            imageName = "compliment-bot"
+            mainClass = "org.faystmax.compliment.bot.ComplimentBotApplication"
+            verbose = true
+            useFatJar = true
+        }
+    }
+    binaries.configureEach {
+        resources.autodetect()
+    }
 }
