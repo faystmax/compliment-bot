@@ -4,7 +4,7 @@ COPY . /app
 WORKDIR /app
 RUN ./gradlew nativeCompile
 
-FROM oraclelinux:9-slim
+FROM seepine/alpine-glibc
 COPY --from=build /app/build/native/nativeCompile/compliment-bot /native/compliment-bot
 WORKDIR /native
 CMD [ "./compliment-bot" ]
