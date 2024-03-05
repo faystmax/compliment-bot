@@ -1,5 +1,6 @@
 package org.faystmax.compliment.bot.bot;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -39,5 +40,12 @@ public class ComplimentTelegramBot extends TelegramLongPollingBot {
     @Override
     public void onRegister() {
         log.info(username + " registered successfully!");
+    }
+
+    @SneakyThrows
+    public void sendCompliment(final String chatId) {
+        final String compliment = compliments.get(ThreadLocalRandom.current().nextInt(0, compliments.size()));
+        log.info("Sending compliment to chatId = {}. compliment = {}", chatId, compliment);
+        sendApiMethod(new SendMessage(chatId, compliment));
     }
 }
