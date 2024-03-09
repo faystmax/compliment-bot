@@ -3,6 +3,7 @@ plugins {
     id 'java'
     id 'application'
     id 'org.graalvm.buildtools.native' version '0.10.1'
+    id 'org.hidetake.ssh' version "2.11.2"
 }
 
 group = "org.faystmax"
@@ -54,6 +55,44 @@ graalvmNative {
         main {
             imageName = "compliment-bot"
             useFatJar = true
+            buildArgs.add("-march=compatibility")
+        }
+    }
+    binaries.configureEach {
+        buildArgs.add("-march=compatibility")
+    }
+}
+
+tasks.register('buildDockerImage') {
+    doLast {
+        exec {
+            workingDir "${projectDir}"
+            commandLine 'cmd', '/c', "docker build -t ${project.name}:${version} . "
+        }
+    }
+}
+
+tasks.register('deploy') {
+    remotes {
+        vds {
+            host = remoteHostComplimentBot
+            user = remoteUserComplimentBot
+            password = remotePasswordComplimentBot
+            knownHosts = allowAnyHosts
+        }
+    }
+    dependsOn tasks.buildDockerImage
+    doLast {
+        exec {
+            workingDir "${projectDir}"
+            commandLine 'cmd', '/c', "docker save -o ${project.layout.buildDirectory.get()}/${project.name}-${version}.tar ${project.name}:${version}"
+        }
+    }
+    ssh.run {
+        session(remotes.vds) {
+            put from: "${project.layout.buildDirectory.get()}/${project.name}-${version}.tar", into: "./"
+            executeSudo "docker load -i ${project.name}-${version}.tar", pty: true
+            executeSudo "service compliment-bot restart", pty: true
         }
     }
 }

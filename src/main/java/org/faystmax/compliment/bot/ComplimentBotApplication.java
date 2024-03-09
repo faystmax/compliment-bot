@@ -37,12 +37,12 @@ public class ComplimentBotApplication {
         final var scheduledExecutorService = Executors.newScheduledThreadPool(1);
         addShutdownHook(scheduledExecutorService);
 
-        scheduledExecutorService.scheduleAtFixedRate(
-                () -> complimentTelegramBot.sendCompliment("799454308"),
-                5,
-                5,
-                TimeUnit.SECONDS
-        );
+//        scheduledExecutorService.scheduleAtFixedRate(
+//                () -> complimentTelegramBot.sendCompliment("799454308"),
+//                5,
+//                5,
+//                TimeUnit.SECONDS
+//        );
     }
 
     private static List<String> extractCompliments() throws IOException {
