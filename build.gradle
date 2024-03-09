@@ -55,11 +55,8 @@ graalvmNative {
         main {
             imageName = "compliment-bot"
             useFatJar = true
-            buildArgs.add("-march=compatibility")
+            runtimeArgs.add("-march=compatibility")
         }
-    }
-    binaries.configureEach {
-        buildArgs.add("-march=compatibility")
     }
 }
 
