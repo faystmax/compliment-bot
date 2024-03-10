@@ -25,8 +25,11 @@ public class ComplimentTelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(final Update update) {
         try {
+            log.info("UpdateReceived chatId = {}", update.getMessage().getChatId());
+
             final String compliment = compliments.get(ThreadLocalRandom.current().nextInt(0, compliments.size()));
             sendApiMethod(new SendMessage(update.getMessage().getChatId().toString(), compliment));
+            log.info("Sending compliment = '{}' to chatId = '{}'", compliment, update.getMessage().getChatId());
         } catch (final TelegramApiException e) {
             throw new RuntimeException(e);
         }
@@ -45,7 +48,7 @@ public class ComplimentTelegramBot extends TelegramLongPollingBot {
     @SneakyThrows
     public void sendCompliment(final String chatId) {
         final String compliment = compliments.get(ThreadLocalRandom.current().nextInt(0, compliments.size()));
-        log.info("Sending compliment to chatId = {}. compliment = {}", chatId, compliment);
+        log.info("Sending compliment to chatId = '{}'. compliment = '{}'", chatId, compliment);
         sendApiMethod(new SendMessage(chatId, compliment));
     }
 }

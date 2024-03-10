@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.faystmax.compliment.bot.bot.ComplimentTelegramBot;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import java.io.BufferedReader;
@@ -37,8 +36,8 @@ public class ComplimentBotApplication {
         final var scheduledExecutorService = Executors.newScheduledThreadPool(1);
         addShutdownHook(scheduledExecutorService);
 
-//        scheduledExecutorService.scheduleAtFixedRate(
-//                () -> complimentTelegramBot.sendCompliment("799454308"),
+//        scheduledExecutorService.scheduleWithFixedDelay(
+//                () -> complimentTelegramBot.sendCompliment(System.getenv("COMPLIMENTS_BOT_CHAT_ID")),
 //                5,
 //                5,
 //                TimeUnit.SECONDS
@@ -53,23 +52,23 @@ public class ComplimentBotApplication {
         }
     }
 
-    private static ComplimentTelegramBot registerBot(final List<String> compliments) throws TelegramApiException, InterruptedException {
+    private static ComplimentTelegramBot registerBot(final List<String> compliments) throws InterruptedException {
         try {
             var telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             var complimentTelegramBot = new ComplimentTelegramBot(
-                    "LeraComplimentBot",
+                    System.getenv("COMPLIMENTS_BOT_NAME"),
                     System.getenv("COMPLIMENTS_BOT_TOKEN"),
                     compliments,
                     new DefaultBotOptions()
             );
             telegramBotsApi.registerBot(complimentTelegramBot);
             return complimentTelegramBot;
-        } catch (final TelegramApiException ex) {
+        } catch (final Throwable ex) {
             log.error("Cant Connect. Pause {} sec and try again.", RECONNECT_PAUSE_SEC, ex);
             Thread.sleep(Duration.ofSeconds(5));
             registerBot(compliments);
         }
-        return null;
+        throw new IllegalStateException();
     }
 
     private static void addShutdownHook(final ScheduledExecutorService scheduledExecutorService) {
